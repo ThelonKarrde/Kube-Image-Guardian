@@ -13,8 +13,10 @@ func IsUsingLatestTag(imageName string) (bool, error) {
 		log.Printf("Image normalizing error: %s\n", err)
 		return false, err
 	}
-	log.Printf("Normalized name: %s\n", normalized)
-	if !strings.HasSuffix(normalized.Name(), ":latest") {
+	if !strings.Contains(normalized.String(), ":") {
+		return true, nil
+	}
+	if !strings.HasSuffix(normalized.String(), ":latest") {
 		return false, nil
 	}
 	return true, nil
