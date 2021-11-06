@@ -1,5 +1,8 @@
 *.key
 *.cert
 certs
-*.yaml
 Makefile
+config.yaml
+app.yaml
+secret.yaml
+webhook.yaml

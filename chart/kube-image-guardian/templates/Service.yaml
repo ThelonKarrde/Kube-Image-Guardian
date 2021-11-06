@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kube-image-guardian.fullname" . }}
+  labels:
+    {{- include "kube-image-guardian.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.appPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "kube-image-guardian.selectorLabels" . | nindent 4 }}
