@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/ThelonKarrde/Kube-Image-Guardian/internal/config"
 	"github.com/ThelonKarrde/Kube-Image-Guardian/internal/validation"
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
@@ -18,10 +18,11 @@ func main() {
 
 	var vl validation.Validator
 	vl.New(startConfig.ConfigPath, infoLog, errorLog)
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", vl.ImageValidation)
 
-	if err := http.ListenAndServeTLS(fmt.Sprintf(":%s", startConfig.Port), startConfig.TlsCertPath, startConfig.TlsKeyPath, mux); err != nil {
+	app := fiber.New()
+	app.Post("/", vl.ImageValidation)
+
+	if err := app.ListenTLS(fmt.Sprintf(":%s", startConfig.Port), startConfig.TlsCertPath, startConfig.TlsKeyPath); err != nil {
 		errorLog.Fatal(err)
 	}
 }

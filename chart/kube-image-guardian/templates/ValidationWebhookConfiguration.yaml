@@ -2,6 +2,7 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
   name: {{ include "kube-image-guardian.fullname" . }}-webhook
+  namespace: {{ include "kube-image-guardian.namespace" . }}
 webhooks:
   - name: {{ include "kube-image-guardian.fullname" . }}-webhook.{{ include "kube-image-guardian.namespace" . }}.svc
     rules:
@@ -13,7 +14,7 @@ webhooks:
           - CREATE
         resources:
           - pods
-    failurePolicy: {{ .Value.validationWebhook.failurePolicy }}
+    failurePolicy: {{ .Values.validationWebhook.failurePolicy }}
     sideEffects: None
     admissionReviewVersions: ["v1", "v1beta1"]
     clientConfig:

@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "kube-image-guardian.fullname" . }}
+  namespace: {{ include "kube-image-guardian.namespace" . }}
   labels:
     {{- include "kube-image-guardian.labels" . | nindent 4 }}
 spec:
@@ -18,25 +19,43 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ include "kube-image-guardian.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.tag }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: CONFIG_PATH
+              value: "/app/local/{{ .Values.configName }}"
+            - name: TLS_CERT_PATH
+              value: "/etc/admission-controller/tls/tls.crt"
+            - name: TLS_KEY_PATH
+              value: "/etc/admission-controller/tls/tls.key"
+          volumeMounts:
+            - mountPath: /app/local
+              name: guardian-config
+            - name: tls
+              mountPath: /etc/admission-controller/tls
           ports:
             - name: http
               containerPort: {{ .Values.appPort }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.appPort }}
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: {{ .Values.appPort }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: "guardian-config"
+          configMap:
+            name: {{ .Values.volumes.config_name }}
+        - name: tls
+          secret:
+            secretName: {{ .Values.volumes.tls_secret_name }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
