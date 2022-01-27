@@ -1,67 +1,63 @@
+################################################################
+####### Default values for kube-image-guardian chart ###########
+################################################################
+
+# caBundle - MUST be specified in order system to work, as all communications with control plane of kubernetes works with encryption
 caBundle: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURvRENDQW9pZ0F3SUJBZ0lVUk9ZZGY1ZVlGTSs0VjJpZkJINUZWR3ZYK0NNd0RRWUpLb1pJaHZjTkFRRUwKQlFBd2FERUxNQWtHQTFVRUJoTUNWVk14RHpBTkJnTlZCQWdUQms5eVpXZHZiakVSTUE4R0ExVUVCeE1JVUc5eQpkR3hoYm1ReEV6QVJCZ05WQkFvVENrdDFZbVZ5Ym1WMFpYTXhDekFKQmdOVkJBc1RBa05CTVJNd0VRWURWUVFECkV3cExkV0psY201bGRHVnpNQjRYRFRJeE1UQXlOREUyTURNd01Gb1hEVEkyTVRBeU16RTJNRE13TUZvd2FERUwKTUFrR0ExVUVCaE1DVlZNeER6QU5CZ05WQkFnVEJrOXlaV2R2YmpFUk1BOEdBMVVFQnhNSVVHOXlkR3hoYm1ReApFekFSQmdOVkJBb1RDa3QxWW1WeWJtVjBaWE14Q3pBSkJnTlZCQXNUQWtOQk1STXdFUVlEVlFRREV3cExkV0psCmNtNWxkR1Z6TUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF1eDVsNW5jQU9LS1kKVkE5K3VKaXhsWEtra2N3bytvQ3NhY0xmL1M0SlB6NW0vY3Z4OFZVSkxyU0NScUJmV0pROXNCcGpjanJ3eStMZQpYSHNPakRSWDMyVDQrZWN3VXdzamVtODFrVXlQRnlTemMrOUkwb0FCd29tUG5SQUl2NlZrcGJyZ2ZQbU9KSE00Ckc0YzcyL3RFZ3dxTjFhRlh3dTBwRk1VTStMWmh5cTE1dWhyc2ZxVlJKWlBUMGxVKytab3l5NURkMWVmcW9DTlQKUWZia0lUMWljVXJCckc3c1l3dXlWbXBwcU9FclF5UkN2a201SDRQNG9ndG9zcXlIMWlXZDZDSURsVE4xbWhudQpLL2IrNWRGMzZQT3Y0K3RJSjhIWHVETFBkQUlGbFI3ZXlGNm5UR01EeDNQTnc0aGFQOWlrUXJvNXdQM2t5eG84CmdhVWhMeXJ6UVFJREFRQUJvMEl3UURBT0JnTlZIUThCQWY4RUJBTUNBUVl3RHdZRFZSMFRBUUgvQkFVd0F3RUIKL3pBZEJnTlZIUTRFRmdRVXB0NzR5WlVjSVZTSkthT0NpMkhCcEdiRFZRMHdEUVlKS29aSWh2Y05BUUVMQlFBRApnZ0VCQUQ4c1hERVN2ejJqQTFJME11QUJQK3VpUENQSWdzbSt3dTdkVkRicWpXZjlUd3BqMEozS3NKdGZHSG9SCjJHbXZWWktzTjRjaVFYZktUOFVwYndnMVVPZko4bTdHek1nSnZnbVVWK0ZDY2plUGJiaVVMY3dlU2g2UVltQloKNTczS3JEL0NDRE1uVjQya3NDMVlNVXh6UmR2YVdEMXBZRzBEYjZoUXRZYXpJdG1TUk53bmIrVGpBZDhCUUFvMgpqTFZUZTNLWG5DbVhiR082RUFiV0QvZllNeXZBUzVnbm1yLzVxRjhBeGZOVG5uWUxuTUJrTkVzQmhZMWkxRzVkCnV3VkYxUHVISXRJYldoR0tlMlRwMEg3bE9Pb1lwejVRdWNzaFVERGZGV2QvZ0x2SW5UOXZNOTA1YmpPZFhiNmQKZXNrcFVYNVlnNXNaNFQzOWVZa09uaWJrYTVZPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=="
-appPort: 1224
-service:
-  port: 443
-  type: ClusterIP
-# Default values for kube-image-guardian.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
 
-configName: config.yaml
+# Chart name overrides
+nameOverride: ""
+fullnameOverride: ""
 
+# Configuration of connectivity with kube-image-guardian
+networkConfig:
+  appPort: 1224
+  service:
+    port: 443
+    type: ClusterIP
+
+# Configuration of kube-image-guardian app
 guardianConfig:
   AllowedRegistries:
     - hub.docker.com
     - gcr.io
   AllowedRepositories:
     - docker.io/library/nginx
-
+    - docker.io/library/rivshiell
   AllowLatest: false
   AllowByDefault: true
 
-# config_name - name of the configmap with a config for the application
+# configMapName - name of the configmap with a config for the application
+# tlsSecretName - name of the secret tls with certificates for communication with kube-api
 volumes:
-  config_name: guardian-config
-  tls_secret_name: kube-image-guardian-certs
+  configMapName: guardian-config
+  tlsSecretName: kube-image-guardian-certs
 
-replicaCount: 1
+deploymentConfig:
+  replicaCount: 2
 
-image:
-  repository: rivshiell/kube-image-guardian
-  tag: v1.0.1
-  pullPolicy: IfNotPresent
+  image:
+    repository: rivshiell/kube-image-guardian
+    tag: v1.0.4
+    pullPolicy: IfNotPresent
 
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+  imagePullSecrets: []
 
+  podSecurityContext: {}
+
+  securityContext: {}
+  
+  resources: {}
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+#Validation webhook configuration. Availble values: Fail, Ignore
 validationWebhook:
-  failurePolicy: Ignore
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
+  failurePolicy: Fail

@@ -6,10 +6,10 @@ metadata:
   labels:
     {{- include "kube-image-guardian.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.networkConfig.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.appPort }}
+    - port: {{ .Values.networkConfig.service.port }}
+      targetPort: {{ .Values.networkConfig.appPort }}
       protocol: TCP
       name: http
   selector:

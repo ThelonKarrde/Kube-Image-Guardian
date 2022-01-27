@@ -2,7 +2,6 @@
 *.cert
 certs
 Makefile
-config.yaml
 app.yaml
 secret.yaml
 webhook.yaml

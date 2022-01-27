@@ -18,7 +18,7 @@ webhooks:
     sideEffects: None
     admissionReviewVersions: ["v1", "v1beta1"]
     clientConfig:
-      caBundle: 
+      caBundle: {{ .Values.caBundle }}
       service:
         name: {{ include "kube-image-guardian.fullname" . }}-webhook
         namespace: {{ include "kube-image-guardian.namespace" . }}

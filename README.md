@@ -113,7 +113,17 @@ Put the result into `caBundle` variable of values.yaml file for helm chart.
 
 ---
 
-Create a TLS secret for for server-container:
+Create a TLS secret for for kube-image-guardian:
 ```
-kubectl create secret tls kube-image-guardian-certs --cert=server.pem --key=server-key.pem
+kubectl -n kube-system create secret tls kube-image-guardian-certs --cert=server.pem --key=server-key.pem
+```
+
+Install chart (first with ignore policy):
+```
+helm install -n kube-system -f ./chart/kube-image-guardian/values.yaml --set validationWebhook.failurePolicy=Ignore kube-image-guardian ./chart/kube-image-guardian/
+```
+
+Once everything configured you can use default value for `failurePolicy`:
+```
+helm upgrade -n kube-system -f ./chart/kube-image-guardian/values.yaml kube-image-guardian ./chart/kube-image-guardian/
 ```

@@ -95,13 +95,5 @@ func (v *Validator) ImageValidation(c *fiber.Ctx) error {
 			}
 		}
 	}
-	js, err := json.Marshal(admissionReview)
-	if err != nil {
-		v.errorLog.Print("Error Marshaling admission review response data")
-		c.Status(fiber.StatusInternalServerError)
-		return c.JSON(&fiber.Map{
-			"error": "Marshaling admission review response data",
-		})
-	}
-	return c.JSON(js)
+	return c.JSON(admissionReview)
 }

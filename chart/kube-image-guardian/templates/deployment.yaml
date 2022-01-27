@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "kube-image-guardian.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.deploymentConfig.replicaCount }}
   selector:
     matchLabels:
       {{- include "kube-image-guardian.selectorLabels" . | nindent 6 }}
@@ -15,21 +15,21 @@ spec:
       labels:
         {{- include "kube-image-guardian.selectorLabels" . | nindent 8 }}
     spec:
-    {{- with .Values.imagePullSecrets }}
+    {{- with .Values.deploymentConfig.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.deploymentConfig.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml .Values.deploymentConfig.securityContext | nindent 12 }}
+          image: "{{ .Values.deploymentConfig.image.repository }}:{{ .Values.deploymentConfig.image.tag }}"
+          imagePullPolicy: {{ .Values.deploymentConfig.image.pullPolicy }}
           env:
             - name: CONFIG_PATH
-              value: "/app/local/{{ .Values.configName }}"
+              value: "/app/local/config.yaml"
             - name: TLS_CERT_PATH
               value: "/etc/admission-controller/tls/tls.crt"
             - name: TLS_KEY_PATH
@@ -41,30 +41,26 @@ spec:
               mountPath: /etc/admission-controller/tls
           ports:
             - name: http
-              containerPort: {{ .Values.appPort }}
+              containerPort: {{ .Values.networkConfig.appPort }}
               protocol: TCP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: {{ .Values.appPort }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.deploymentConfig.resources | nindent 12 }}
       volumes:
         - name: "guardian-config"
           configMap:
-            name: {{ .Values.volumes.config_name }}
+            name: {{ .Values.volumes.configMapName }}
         - name: tls
           secret:
-            secretName: {{ .Values.volumes.tls_secret_name }}
+            secretName: {{ .Values.volumes.tlsSecretName }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.deploymentConfig.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.deploymentConfig.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
