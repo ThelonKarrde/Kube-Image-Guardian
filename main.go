@@ -20,7 +20,7 @@ func main() {
 	vl.New(startConfig.ConfigPath, infoLog, errorLog)
 
 	app := fiber.New()
-	app.Post("/", vl.ImageValidation)
+	app.Post("/", vl.Validate)
 
 	if err := app.ListenTLS(fmt.Sprintf(":%s", startConfig.Port), startConfig.TlsCertPath, startConfig.TlsKeyPath); err != nil {
 		errorLog.Fatal(err)

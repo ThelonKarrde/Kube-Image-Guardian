@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kube-image-guardian.fullname" . }}
+  namespace: {{ include "kube-image-guardian.namespace" . }}
+  labels:
+    {{- include "kube-image-guardian.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.deploymentConfig.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kube-image-guardian.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kube-image-guardian.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.deploymentConfig.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      securityContext:
+        {{- toYaml .Values.deploymentConfig.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.deploymentConfig.securityContext | nindent 12 }}
+          image: "{{ .Values.deploymentConfig.image.repository }}:{{ .Values.deploymentConfig.image.tag }}"
+          imagePullPolicy: {{ .Values.deploymentConfig.image.pullPolicy }}
+          env:
+            - name: CONFIG_PATH
+              value: "/app/local/config.yaml"
+            - name: TLS_CERT_PATH
+              value: "/etc/admission-controller/tls/tls.crt"
+            - name: TLS_KEY_PATH
+              value: "/etc/admission-controller/tls/tls.key"
+          volumeMounts:
+            - mountPath: /app/local
+              name: guardian-config
+            - name: tls
+              mountPath: /etc/admission-controller/tls
+          ports:
+            - name: http
+              containerPort: {{ .Values.networkConfig.appPort }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.deploymentConfig.resources | nindent 12 }}
+      volumes:
+        - name: "guardian-config"
+          configMap:
+            name: {{ .Values.volumes.configMapName }}
+        - name: tls
+          secret:
+            secretName: {{ .Values.volumes.tlsSecretName }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.deploymentConfig.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.deploymentConfig.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

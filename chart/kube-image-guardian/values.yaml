@@ -18,14 +18,18 @@ networkConfig:
 
 # Configuration of kube-image-guardian app
 guardianConfig:
-  AllowedRegistries:
+  allowed_registries:
     - hub.docker.com
     - gcr.io
-  AllowedRepositories:
+  allowed_repositories:
     - docker.io/library/nginx
     - docker.io/library/rivshiell
-  AllowLatest: false
-  AllowByDefault: true
+  allow_latest: false
+  allow_by_default: true
+  log_only: false
+  limits_defined: false
+  requests_defined: false
+  desired_versions: {}
 
 # configMapName - name of the configmap with a config for the application
 # tlsSecretName - name of the secret tls with certificates for communication with kube-api
