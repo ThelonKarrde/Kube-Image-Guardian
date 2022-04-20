@@ -1,4 +1,6 @@
 # Kube-Image-Guardian
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FThelonKarrde%2FKube-Image-Guardian.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FThelonKarrde%2FKube-Image-Guardian?ref=badge_shield)
+
 
 This is a tool which will help you to allow only certain list of repositories in order to enhance your security.
 
@@ -127,3 +129,6 @@ Once everything configured you can use default value for `failurePolicy`:
 ```
 helm upgrade -n kube-system -f ./chart/kube-image-guardian/values.yaml kube-image-guardian ./chart/kube-image-guardian/
 ```
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FThelonKarrde%2FKube-Image-Guardian.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FThelonKarrde%2FKube-Image-Guardian?ref=badge_large)
